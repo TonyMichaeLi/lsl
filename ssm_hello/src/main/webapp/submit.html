@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>用ajax以json方式提交数据</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+</head>
+<body>
+<!--    <form>-->
+<!--        id:<input type="text" id="id" value="123"><br>-->
+<!--        名称：<input type="text" id="name" value="category xxx"/><br/>-->
+<!--        <input type="button" value="提交" id="sender">-->
+<!--    </form>-->
+<!--    <div id="messageDiv"></div>-->
+    <form>
+        id:<input type="text" id="id" value="123"><br>
+        名称：<input type="text" id="name" value="category xxx"/><br/>
+        <input type="button" value="提交" id="sender">
+    </form>
+    <div id="messageDiv"></div>
+
+    <script>
+
+        $(document).ready(function () {
+            var data = {
+                roleName:'roleName',
+                note:'note'
+            }
+            $.ajax({
+                type:"post",
+                url:"category/submitRole",
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                success:function (result) {
+
+                }
+            });
+        });
+
+        $('#sender').click(function(){
+            var id=document.getElementById('id').value;
+            var name=document.getElementById('name').value;
+            var category={
+                id:id,
+                name:name
+            };
+            var page="category/submitCategory";
+
+            $.ajax({
+                type:"post",
+                url: page,
+                data:JSON.stringify(category),
+                dataType:"json",
+                contentType : "application/json;charset=UTF-8",
+                success: function(result){
+                }
+            });
+            alert("提交成功，请在Tomcat控制台查看服务端接收到的数据");
+
+        });
+
+    </script>
+</body>
+</html>

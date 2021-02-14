@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+	   http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	   http://www.springframework.org/schema/aop
+	   http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.lsl.*">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/ssm_hello2?serverTimezone=GMT%2B8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+
+        <!--        &lt;!&ndash; 配置初始化大小、最小、最大 &ndash;&gt;-->
+        <!--        <property name="initialSize" value="3"/>-->
+        <!--        <property name="minIdle" value="3"/>-->
+        <!--        <property name="maxActive" value="20"/>-->
+
+        <!--        &lt;!&ndash; 配置获取连接等待超时的时间 &ndash;&gt;-->
+        <!--        <property name="maxWait" value="60000"/>-->
+
+        <!--        &lt;!&ndash; 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 &ndash;&gt;-->
+        <!--        <property name="timeBetweenEvictionRunsMillis" value="60000"/>-->
+
+        <!--        &lt;!&ndash; 配置一个连接在池中最小生存的时间，单位是毫秒 &ndash;&gt;-->
+        <!--        <property name="minEvictableIdleTimeMillis" value="300000"/>-->
+
+        <!--        <property name="validationQuery" value="SELECT 1"/>-->
+        <!--        <property name="testWhileIdle" value="true"/>-->
+        <!--        <property name="testOnBorrow" value="false"/>-->
+        <!--        <property name="testOnReturn" value="false"/>-->
+
+        <!--        &lt;!&ndash; 打开PSCache，并且指定每个连接上PSCache的大小 &ndash;&gt;-->
+        <!--        <property name="poolPreparedStatements" value="true"/>-->
+        <!--        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>-->
+    </bean>
+
+<!--        <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">-->
+<!--            <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>-->
+<!--            <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ssm_hello2?serverTimezone=GMT%2B8"/>-->
+<!--            <property name="user" value="root"/>-->
+<!--            <property name="password" value="123456"/>-->
+<!--        </bean>-->
+
+    <!--    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+    <!--        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>-->
+    <!--        <property name="url" value="jdbc:mysql://localhost:3306/ssm_hello2?serverTimezone=GMT%2B8"/>-->
+    <!--        <property name="username" value="root"/>-->
+    <!--        <property name="password" value="123456"/>-->
+    <!--    </bean>-->
+
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- 作用是扫描mapper包，生成包下所有接口的代理对象，并放入spring容器中 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.lsl.dao"/>
+        <!--        <property name="sqlSessionFactoryBeanName" value="sessionFactory"/>-->
+        <!--        <property name="annotationClass" value="org.springframework.stereotype.Repository"/>-->
+    </bean>
+
+    <!-- 配置数据源事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 配置事务注解扫描器 -->
+    <!-- <tx:annotation-driven transaction-manager="transactionManager"/>-->
+
+    <!-- 配置事务通知 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置AOP增强 -->
+    <aop:config>
+        <aop:pointcut id="serviceMethod" expression="execution(* com.lsl.service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod"/>
+    </aop:config>
+
+</beans>

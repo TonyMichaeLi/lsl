@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>用ajax以json方式提交list数据</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+</head>
+<body>
+
+    <script>
+
+        $(document).ready(function () {
+           var idList = [
+               {roleName:'role_name_1',note:'note_1'},
+               {roleName:'role_name_2',note:'note_2'},
+               {roleName:'role_name_3',note:'note_3'}
+           ];
+
+           $.ajax({
+               type:"post",
+               url:"/category/submitList",
+               data:JSON.stringify(idList),
+               contentType:"application/json",
+               success:function (result) {
+                   console.log("成功!!");
+               }
+           });
+        });
+
+    </script>
+</body>
+</html>

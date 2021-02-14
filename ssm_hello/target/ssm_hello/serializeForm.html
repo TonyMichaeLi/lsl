@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>提交序列化表单</title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#commit").click(function () {
+                var str = $("#form").serialize();
+                //提交表单
+                $.ajax({
+                    url:"/category/submitSerializeForm",
+                    data:str,
+                    success:function (result) {
+                        console.log("提交序列化表单成功!!!!");
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <form id="form">
+        <table>
+            <tr>
+                <td>角色名称</td>
+                <td>
+                    <input id="roleName" name="roleName" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td>
+                    <input id="note" name="note"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    <input id="commit" type="button" value="提交"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
