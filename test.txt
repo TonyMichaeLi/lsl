@@ -1,1 +1,2 @@
 ssm整合图书管理demo
+ssm整合练习项目，目前只有crud以及一些练习小demo
